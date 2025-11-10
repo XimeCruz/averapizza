@@ -34,7 +34,6 @@ public class AuthController {
         Rol rol = rolRepository.findByNombre(nombreRol)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + rolNombre));
 
-        // Asignar rol
         Set<Rol> roles = new HashSet<>();
         roles.add(rol);
 

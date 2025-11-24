@@ -16,16 +16,19 @@ public class Producto {
     private Long id;
 
     private String nombre;
-    private String descripcion;
-    private BigDecimal precio;
-    private boolean conReceta;
+//    private String descripcion;
+    private Double precio;
+    private Boolean conReceta;
 
-    @ManyToOne
-    @JoinColumn(name = "sucursal_id")
-    private Sucursal sucursal;
+//    @Column(name = "con_receta")
+//    private Boolean conReceta;
 
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Receta> recetas;
+//    @ManyToOne
+//    @JoinColumn(name = "sucursal_id")
+//    private Sucursal sucursal;
+//
+//    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Receta> recetas;
 
 }
 

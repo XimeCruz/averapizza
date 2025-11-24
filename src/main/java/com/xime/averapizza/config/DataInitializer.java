@@ -18,7 +18,7 @@ public class DataInitializer {
             rolRepository.save(new Rol(null, Rol.RolNombre.ADMIN));
             rolRepository.save(new Rol(null, Rol.RolNombre.CAJERO));
             rolRepository.save(new Rol(null, Rol.RolNombre.CLIENTE));
-            System.out.println("✅ Roles inicializados correctamente");
+            System.out.println("Roles inicializados correctamente");
         }
     }
 }

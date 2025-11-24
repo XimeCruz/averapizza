@@ -17,9 +17,12 @@ public class Insumo {
     private String nombre;
     private String unidadMedida;
     private Double stockActual;
+    private Double stockMinimo;
 
-    @OneToMany(mappedBy = "insumo", cascade = CascadeType.ALL)
-    private List<MovimientoInventario> movimientos;
+    private Boolean activo;
+
+//    @OneToMany(mappedBy = "insumo", cascade = CascadeType.ALL)
+//    private List<MovimientoInventario> movimientos;
 
 }
 

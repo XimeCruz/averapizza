@@ -3,31 +3,23 @@ package com.xime.averapizza.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
-@Data
 @Entity
-@Table(name = "detalle_pedido")
-public class DetallePedido {
+@Table(name = "detalle_venta")
+@Data
+public class DetalleVenta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "pedido_id")
-    private Pedido pedido;
+    @JoinColumn(name = "venta_id")
+    private Venta venta;
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
     private Producto producto;
 
     private Integer cantidad;
-
-    //@Column(precision = 10, scale = 2)
     private Double subtotal;
-
-    private Double precioUnitario;
-
 }
-

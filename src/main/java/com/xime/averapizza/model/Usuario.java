@@ -27,8 +27,8 @@ public class Usuario {
     )
     private Set<Rol> roles;
 
-    @OneToMany(mappedBy = "cajero")
-    private Set<Venta> ventas;
+//    @OneToMany(mappedBy = "cajero")
+//    private Set<Venta> ventas;
 
 }
 

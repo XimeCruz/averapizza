@@ -30,8 +30,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/auth/**",
+                                "/api/auth/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cocina/**").hasAnyRole("CAJERO", "ADMIN")
                         .requestMatchers("/cajero/**").hasAnyRole("CAJERO", "ADMIN")
                         .requestMatchers("/cliente/**").hasAnyRole("CLIENTE", "CAJERO", "ADMIN")
                         .anyRequest().authenticated()
@@ -60,5 +67,20 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        var cors = new org.springframework.web.cors.CorsConfiguration();
+        cors.addAllowedOriginPattern("*");
+        cors.addAllowedHeader("*");
+        cors.addAllowedMethod("*");
+        cors.setAllowCredentials(false);
+
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cors);
+
+        return source;
+    }
+
 }
 

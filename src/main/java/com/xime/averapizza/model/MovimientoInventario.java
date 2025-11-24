@@ -18,9 +18,17 @@ public class MovimientoInventario {
     private Double cantidad;
     private LocalDateTime fechaHora = LocalDateTime.now();
 
+    private String referencia;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "insumo_id")
     private Insumo insumo;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "usuario_id")
+//    private Usuario usuario;
+
+    private Integer usuarioId;
 
 }
 

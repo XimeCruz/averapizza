@@ -7,6 +7,7 @@ import com.xime.averapizza.repository.UsuarioRepository;
 import com.xime.averapizza.security.jwt.JwtService;
 import com.xime.averapizza.security.model.AuthRequest;
 import com.xime.averapizza.security.model.AuthResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Registro y autentificación", description = "Registro y login de usuarios")
 @RequiredArgsConstructor
 public class AuthController {
 

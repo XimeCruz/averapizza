@@ -54,7 +54,13 @@ public class AuthController {
 
         var user = usuarioRepository.findByCorreo(request.getCorreo());
         String token = jwtService.generateToken(user.getCorreo());
-        return new AuthResponse(token);
+
+        String rol = String.valueOf(user.getRoles().stream()
+                .findFirst()
+                .map(Rol::getNombre)
+                .orElse(Rol.RolNombre.CLIENTE));
+
+        return new AuthResponse(token, user.getNombre(), user.getCorreo(), rol);
     }
 }
 

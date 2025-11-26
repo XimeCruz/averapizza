@@ -28,3 +28,22 @@ public class CorsConfig {
     }
 }
 
+//@Configuration
+//public class CorsConfig {
+//
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                // Esta configuración cubre TODOS los endpoints
+//                registry.addMapping("/**")
+//                        .allowedOrigins("*")
+//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                        .allowedHeaders("*")
+//                        .exposedHeaders("Authorization") // Si usas JWT en headers
+//                        .maxAge(3600);
+//            }
+//        };
+//    }
+//}

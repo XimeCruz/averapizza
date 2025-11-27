@@ -30,7 +30,7 @@ public class AuthController {
     private final RolRepository rolRepository;
 
     @PostMapping("/register")
-    public String register(@RequestBody Usuario usuario,
+    public AuthResponse register(@RequestBody Usuario usuario,
                            @RequestParam(defaultValue = "CLIENTE") String rolNombre) {
         Rol.RolNombre nombreRol = Rol.RolNombre.valueOf(rolNombre.toUpperCase());
         Rol rol = rolRepository.findByNombre(nombreRol)
@@ -43,7 +43,11 @@ public class AuthController {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuarioRepository.save(usuario);
 
-        return "Usuario registrado con rol: " + rolNombre;
+        var user = usuario;
+        String token = jwtService.generateToken(user.getCorreo());
+
+        return new AuthResponse(token, usuario.getNombre(), user.getCorreo(), rol.getNombre().toString());
+        //return "Usuario registrado con rol: " + rolNombre;
     }
 
     @PostMapping("/login")

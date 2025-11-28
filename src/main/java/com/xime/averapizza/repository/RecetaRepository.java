@@ -2,6 +2,7 @@ package com.xime.averapizza.repository;
 
 import com.xime.averapizza.model.Producto;
 import com.xime.averapizza.model.Receta;
+import com.xime.averapizza.model.SaborPizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,6 +12,10 @@ public interface RecetaRepository extends JpaRepository<Receta, Long> {
 
     //List<Receta> findByProducto(Producto producto);
 
-    Optional<Receta> findByProducto(Producto producto);
+    //Optional<Receta> findByProducto(Producto producto);
+
+    Optional<Receta> findBySabor(SaborPizza sabor);
+
+    Optional<Receta> findBySaborId(Long saborId);
 
 }

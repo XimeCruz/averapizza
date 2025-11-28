@@ -1,14 +1,16 @@
 package com.xime.averapizza.controller;
 
-import com.xime.averapizza.dto.CrearRecetaRequestDTO;
-import com.xime.averapizza.model.Producto;
+import com.xime.averapizza.dto.RecetaDetalleRequest;
+import com.xime.averapizza.model.Insumo;
 import com.xime.averapizza.model.Receta;
-import com.xime.averapizza.repository.ProductoRepository;
-import com.xime.averapizza.repository.RecetaRepository;
+import com.xime.averapizza.model.RecetaDetalle;
 import com.xime.averapizza.service.RecetaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/recetas")
@@ -17,28 +19,29 @@ import org.springframework.web.bind.annotation.*;
 public class RecetaController {
 
     private final RecetaService recetaService;
-    private final RecetaRepository recetaRepository;
-    private final ProductoRepository productoRepository;
 
-    @PostMapping
-    public Receta crearOActualizarReceta(@RequestBody CrearRecetaRequestDTO request) {
-        return recetaService.crearOActualizarReceta(request);
+    @PostMapping("/{saborId}")
+    public ResponseEntity<Receta> crearOActualizar(
+            @PathVariable Long saborId,
+            @RequestBody List<RecetaDetalleRequest> detalles
+    ) {
+        List<RecetaDetalle> items = detalles.stream().map(d -> {
+            RecetaDetalle det = new RecetaDetalle();
+            det.setCantidad(d.getCantidad());
+
+            Insumo insumo = new Insumo();
+            insumo.setId(d.getInsumoId());
+            det.setInsumo(insumo);
+
+            return det;
+        }).toList();
+
+        return ResponseEntity.ok(recetaService.crearOActualizar(saborId, items));
     }
 
-    @GetMapping("/{productoId}")
-    public Receta obtenerPorProducto(@PathVariable Long productoId) {
-        Producto p = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        return recetaRepository.findByProducto(p)
-                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
-    }
-
-    @PutMapping("/{recetaId}")
-    public Receta actualizar(@PathVariable Integer recetaId,
-                             @RequestBody CrearRecetaRequestDTO request) {
-
-        request.setProductoId(request.getProductoId());
-        return recetaService.crearOActualizarReceta(request);
+    @GetMapping("/{saborId}")
+    public ResponseEntity<Receta> obtener(@PathVariable Long saborId) {
+        return ResponseEntity.ok(recetaService.obtenerPorSabor(saborId));
     }
 }
+

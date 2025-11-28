@@ -1,11 +1,14 @@
 package com.xime.averapizza.model;
 
 
+import com.xime.averapizza.dto.DetallePedidoItem;
+import com.xime.averapizza.dto.PedidoResponseDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -39,6 +42,30 @@ public class Pedido {
 
     @Column(name = "usuario_id")
     private Integer usuarioId;
+
+    private PedidoResponseDTO mapToResponse(Pedido pedido) {
+        List<DetallePedidoItem> items = new ArrayList<>();
+
+        if (pedido.getDetalles() != null) {
+            for (DetallePedido det : pedido.getDetalles()) {
+                items.add(
+                        DetallePedidoItem.builder()
+                                .producto(det.getProducto().getNombre())
+                                .cantidad(det.getCantidad())
+                                .subtotal(det.getSubtotal())
+                                .build()
+                );
+            }
+        }
+
+        return PedidoResponseDTO.builder()
+                .pedidoId(pedido.getId())
+                .total(pedido.getTotal())
+                .estado(pedido.getEstado().name())
+                .tipoServicio(pedido.getTipoServicio().name())
+                .items(items)
+                .build();
+    }
 
 }
 

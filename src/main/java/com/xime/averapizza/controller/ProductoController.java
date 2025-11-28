@@ -2,8 +2,10 @@ package com.xime.averapizza.controller;
 
 import com.xime.averapizza.model.Producto;
 import com.xime.averapizza.repository.ProductoRepository;
+import com.xime.averapizza.service.ProductoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,37 +16,32 @@ import java.util.List;
 @Tag(name = "Productos", description = "Gestión de productos del menú")
 public class ProductoController {
 
-    private final ProductoRepository productoRepository;
+    private final ProductoService service;
+
+    @PostMapping
+    public ResponseEntity<Producto> crear(@RequestBody Producto request) {
+        return ResponseEntity.ok(service.crear(request));
+    }
 
     @GetMapping
-    public List<Producto> listar() {
-        return productoRepository.findAll();
+    public ResponseEntity<List<Producto>> listar() {
+        return ResponseEntity.ok(service.listar());
     }
 
     @GetMapping("/{id}")
-    public Producto obtener(@PathVariable Long id) {
-        return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-    }
-
-    @PostMapping
-    public Producto crear(@RequestBody Producto p) {
-        return productoRepository.save(p);
+    public ResponseEntity<Producto> obtener(@PathVariable Long id) {
+        return ResponseEntity.ok(service.obtener(id));
     }
 
     @PutMapping("/{id}")
-    public Producto actualizar(@PathVariable Long id, @RequestBody Producto p) {
-        Producto original = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        original.setNombre(p.getNombre());
-        original.setPrecio(p.getPrecio());
-        original.setConReceta(p.getConReceta());
-        return productoRepository.save(original);
+    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Producto request) {
+        return ResponseEntity.ok(service.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public String eliminar(@PathVariable Long id) {
-        productoRepository.deleteById(id);
-        return "Producto eliminado";
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }
+

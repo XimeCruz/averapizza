@@ -1,6 +1,7 @@
 package com.xime.averapizza.service;
 
 import com.xime.averapizza.model.Pedido;
+import com.xime.averapizza.model.SaborPizza;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -34,11 +35,18 @@ import com.xime.averapizza.model.Producto;
 
 public interface InventarioService {
 
-    VerificarStockResponse verificarStockParaProducto(VerificarStockRequestDTO request);
+//    VerificarStockResponse verificarStockParaProducto(VerificarStockRequestDTO request);
+//
+//    void descontarStockPorProducto(Producto producto, Integer cantidadProducto, Integer usuarioId, String referencia);
+//
+//    void devolverStockPorProducto(Producto producto, Integer cantidadProducto, Integer usuarioId, String referencia);
 
-    void descontarStockPorProducto(Producto producto, Integer cantidadProducto, Integer usuarioId, String referencia);
+    void descontarPorSabor(SaborPizza sabor, int cantidad);
 
-    void devolverStockPorProducto(Producto producto, Integer cantidadProducto, Integer usuarioId, String referencia);
+    void devolverPorSabor(SaborPizza sabor, int cantidad);
+
+    void ajustarStock(Long insumoId, Double cantidad, String tipo, String referencia, Integer usuarioId);
+
 }
 
 

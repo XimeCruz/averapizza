@@ -16,9 +16,16 @@ public class Producto {
     private Long id;
 
     private String nombre;
-//    private String descripcion;
-    private Double precio;
-    private Boolean conReceta;
+
+    @Enumerated(EnumType.STRING)
+    private TipoProducto tipoProducto;
+
+    // true para pizzas
+    private Boolean tieneSabores;
+
+    //    private String descripcion;
+//    private Double precio;
+//    private Boolean conReceta;
 
 //    @Column(name = "con_receta")
 //    private Boolean conReceta;
@@ -29,6 +36,12 @@ public class Producto {
 //
 //    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Receta> recetas;
+
+    public enum TipoProducto {
+        PIZZA,
+        BEBIDA,
+        OTRO
+    }
 
 }
 

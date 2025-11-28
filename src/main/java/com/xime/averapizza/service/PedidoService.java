@@ -20,16 +20,21 @@ public interface PedidoService {
 
     PedidoResponseDTO cambiarEstado(Long pedidoId, String nuevoEstado);
 
+    PedidoResponseDTO obtenerPedidoDTO(Long pedidoId);
 
-    List<PedidoResponseDTO> listarPorEstado(String estado); // para cocina / cajero
+    List<PedidoResponseDTO> listarPedidosHoy();
 
-    PedidoResponseDTO tomarParaPreparacion(Long pedidoId);   // PENDIENTE -> EN_PREPARACION
+    List<PedidoResponseDTO> listarPorRango(String inicio, String fin);
 
-    PedidoResponseDTO marcarListo(Long pedidoId);            // EN_PREPARACION -> LISTO
+    List<PedidoResponseDTO> listarPorEstado(String estado);
 
-    PedidoResponseDTO marcarEntregado(Long pedidoId);        // LISTO -> ENTREGADO
+    PedidoResponseDTO tomarParaPreparacion(Long pedidoId);
 
-    PedidoResponseDTO cancelar(Long pedidoId);               // PENDIENTE / EN_PREPARACION -> CANCELADO
+    PedidoResponseDTO marcarListo(Long pedidoId);
+
+    PedidoResponseDTO marcarEntregado(Long pedidoId);
+
+    PedidoResponseDTO cancelar(Long pedidoId);
 
 }
 

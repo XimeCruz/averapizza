@@ -15,8 +15,8 @@ public class InventarioController {
 
     private final InventarioService inventarioService;
 
-    @PostMapping("/verificar-stock")
-    public VerificarStockResponse verificarStock(@RequestBody VerificarStockRequestDTO request) {
-        return inventarioService.verificarStockParaProducto(request);
-    }
+//    @PostMapping("/verificar-stock")
+//    public VerificarStockResponse verificarStock(@RequestBody VerificarStockRequestDTO request) {
+//        return inventarioService..verificarStockParaProducto(request);
+//    }
 }

@@ -15,8 +15,12 @@ public class Receta {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "producto_id")
-    private Producto producto;
+    @JoinColumn(name = "sabor_id")
+    private SaborPizza sabor;
+
+//    @ManyToOne
+//    @JoinColumn(name = "producto_id")
+//    private Producto producto;
 
 //    @ManyToOne
 //    @JoinColumn(name = "insumo_id")

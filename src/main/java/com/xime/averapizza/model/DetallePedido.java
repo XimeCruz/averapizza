@@ -29,5 +29,24 @@ public class DetallePedido {
 
     private Double precioUnitario;
 
+    @ManyToOne
+    @JoinColumn(name = "presentacion_id")
+    private PresentacionProducto presentacion;
+
+    @ManyToOne
+    @JoinColumn(name = "sabor1_id")
+    private SaborPizza sabor1;
+
+    @ManyToOne
+    @JoinColumn(name = "sabor2_id")
+    private SaborPizza sabor2; // null si no hay
+
+    @ManyToOne
+    @JoinColumn(name = "sabor3_id")
+    private SaborPizza sabor3; // solo para bandeja
+
+    private Double pesoKg; // solo si presentacion = PESO
+
+
 }
 

@@ -9,8 +9,10 @@ import java.util.List;
 
 public interface RecetaDetalleRepository extends JpaRepository<RecetaDetalle, Long> {
 
-    @Query("SELECT rd FROM RecetaDetalle rd WHERE rd.receta.producto = :producto")
-    List<RecetaDetalle> findByProducto(Producto producto);
+//    @Query("SELECT rd FROM RecetaDetalle rd WHERE rd.receta.producto = :producto")
+//    List<RecetaDetalle> findByProducto(Producto producto);
+
+    List<RecetaDetalle> findByRecetaId(Long recetaId);
 
 }
 

@@ -3,7 +3,7 @@ package com.xime.averapizza.dto;
 import lombok.Data;
 
 @Data
-public class DetallePedidoRequestDTO {
+public class CrearDetallePizzaDTO {
     private Long productoId;
     private Long presentacionId;
     private Long sabor1Id;

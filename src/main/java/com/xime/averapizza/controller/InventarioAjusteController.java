@@ -15,9 +15,18 @@ public class InventarioAjusteController {
     @PostMapping("/ajustar")
     public String ajustar(@RequestBody InventarioAjusteRequest req) {
 
-        jdbcTemplate.queryForObject(
-                "SELECT fn_ajustar_stock(?, ?, ?, ?, ?)",
-                Void.class,
+//        jdbcTemplate.queryForObject(
+//                "SELECT fn_ajustar_stock(?, ?, ?, ?, ?)",
+//                Void.class,
+//                req.getInsumoId(),
+//                req.getCantidad(),
+//                req.getTipoMov(),
+//                req.getReferencia(),
+//                req.getUsuarioId()
+//        );
+
+        jdbcTemplate.update(
+                "CALL fn_ajustar_stock(?, ?, ?, ?, ?);",
                 req.getInsumoId(),
                 req.getCantidad(),
                 req.getTipoMov(),

@@ -187,16 +187,15 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     public void ajustarStock(Long insumoId, Double cantidad, String tipo, String referencia, Integer usuarioId) {
-
-        jdbcTemplate.queryForObject(
-                "SELECT fn_ajustar_stock(?, ?, ?, ?, ?);",
-                Void.class,
+        jdbcTemplate.update(
+                "CALL fn_ajustar_stock(?, ?, ?, ?, ?);",
                 insumoId,
                 cantidad,
                 tipo,
                 referencia,
                 usuarioId
         );
+
     }
 }
 

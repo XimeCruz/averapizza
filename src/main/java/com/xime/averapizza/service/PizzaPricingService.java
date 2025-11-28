@@ -22,7 +22,7 @@ public class PizzaPricingService {
             Double pesoKg
     ) {
 
-        PresentacionProducto.TipoPresentacion tipo = presentacion.getTipo(); // ← el tuyo
+        PresentacionProducto.TipoPresentacion tipo = presentacion.getTipo();
         if (tipo == null) throw new RuntimeException("La presentación no tiene tipo.");
 
         switch (tipo) {
@@ -35,17 +35,32 @@ public class PizzaPricingService {
                 return pesoKg * precioKg;
 
             case REDONDA:
-                return maxPrecio(
+                return calcularPromedioPrecios(
                         obtenerPrecioPorPresentacion(s1, PresentacionProducto.TipoPresentacion.REDONDA),
-                        s2 != null ? obtenerPrecioPorPresentacion(s2, PresentacionProducto.TipoPresentacion.REDONDA) : null
+                        s2 != null && s2.getId() != null && s2.getId() != 0
+                                ? obtenerPrecioPorPresentacion(s2, PresentacionProducto.TipoPresentacion.REDONDA)
+                                : null
                 );
+//                return maxPrecio(
+//                        obtenerPrecioPorPresentacion(s1, PresentacionProducto.TipoPresentacion.REDONDA),
+//                        s2 != null ? obtenerPrecioPorPresentacion(s2, PresentacionProducto.TipoPresentacion.REDONDA) : null
+//                );
 
             case BANDEJA:
-                return maxPrecio(
+                return calcularPromedioPrecios(
                         obtenerPrecioPorPresentacion(s1, PresentacionProducto.TipoPresentacion.BANDEJA),
-                        s2 != null ? obtenerPrecioPorPresentacion(s2, PresentacionProducto.TipoPresentacion.BANDEJA) : null,
-                        s3 != null ? obtenerPrecioPorPresentacion(s3, PresentacionProducto.TipoPresentacion.BANDEJA) : null
+                        s2 != null && s2.getId() != null && s2.getId() != 0
+                                ? obtenerPrecioPorPresentacion(s2, PresentacionProducto.TipoPresentacion.BANDEJA)
+                                : null,
+                        s3 != null && s3.getId() != null && s3.getId() != 0
+                                ? obtenerPrecioPorPresentacion(s3, PresentacionProducto.TipoPresentacion.BANDEJA)
+                                : null
                 );
+//                return maxPrecio(
+//                        obtenerPrecioPorPresentacion(s1, PresentacionProducto.TipoPresentacion.BANDEJA),
+//                        s2 != null ? obtenerPrecioPorPresentacion(s2, PresentacionProducto.TipoPresentacion.BANDEJA) : null,
+//                        s3 != null ? obtenerPrecioPorPresentacion(s3, PresentacionProducto.TipoPresentacion.BANDEJA) : null
+//                );
         }
 
         return 0.0;
@@ -69,6 +84,20 @@ public class PizzaPricingService {
                 .filter(Objects::nonNull)
                 .max(Double::compare)
                 .orElse(0.0);
+    }
+
+    private Double calcularPromedioPrecios(Double... precios) {
+        double suma = 0.0;
+        int count = 0;
+
+        for (Double p : precios) {
+            if (p != null) {
+                suma += p;
+                count++;
+            }
+        }
+
+        return count == 0 ? 0.0 : (suma / count);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.xime.averapizza.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,11 +18,12 @@ public class SaborPizza {
     private String nombre;
     private String descripcion;
 
-    // A qué producto pertenece (ej: Pizza Artesanal)
+
     @ManyToOne
     @JoinColumn(name = "producto_id")
     private Producto producto;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sabor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PrecioSaborPresentacion> precios;
 

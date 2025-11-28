@@ -1,5 +1,6 @@
 package com.xime.averapizza.controller;
 
+import com.xime.averapizza.dto.RecetaDTO;
 import com.xime.averapizza.dto.RecetaDetalleRequest;
 import com.xime.averapizza.model.Insumo;
 import com.xime.averapizza.model.Receta;
@@ -21,10 +22,11 @@ public class RecetaController {
     private final RecetaService recetaService;
 
     @PostMapping("/{saborId}")
-    public ResponseEntity<Receta> crearOActualizar(
+    public ResponseEntity<RecetaDTO> crearOActualizar(
             @PathVariable Long saborId,
             @RequestBody List<RecetaDetalleRequest> detalles
     ) {
+        System.out.println("Iniciando receta " + saborId);
         List<RecetaDetalle> items = detalles.stream().map(d -> {
             RecetaDetalle det = new RecetaDetalle();
             det.setCantidad(d.getCantidad());

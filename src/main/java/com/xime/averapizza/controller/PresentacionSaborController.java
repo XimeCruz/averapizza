@@ -18,38 +18,38 @@ import java.util.List;
 @Tag(name = "Combinaciones de Presentación y Sabores")
 public class PresentacionSaborController {
 
-    private final PresentacionSaborRepository presentacionSaborRepo;
-    private final PresentacionProductoRepository presentacionRepo;
-    private final SaborPizzaRepository saborRepo;
-
-    @GetMapping
-    public List<PresentacionSabor> listar() {
-        return presentacionSaborRepo.findAll();
-    }
-
-    @GetMapping("/presentacion/{presentacionId}")
-    public List<PresentacionSabor> listarPorPresentacion(@PathVariable Long presentacionId) {
-        return presentacionSaborRepo.findByPresentacionId(presentacionId);
-    }
-
-    @PostMapping
-    public PresentacionSabor crear(@RequestBody PresentacionSabor ps) {
-
-        PresentacionProducto presentacion = presentacionRepo.findById(ps.getPresentacion().getId())
-                .orElseThrow(() -> new RuntimeException("Presentación no encontrada"));
-
-        SaborPizza sabor = saborRepo.findById(ps.getSabor().getId())
-                .orElseThrow(() -> new RuntimeException("Sabor no encontrado"));
-
-        ps.setPresentacion(presentacion);
-        ps.setSabor(sabor);
-
-        return presentacionSaborRepo.save(ps);
-    }
-
-    @DeleteMapping("/{id}")
-    public String eliminar(@PathVariable Long id) {
-        presentacionSaborRepo.deleteById(id);
-        return "Combinación eliminada";
-    }
+//    private final PresentacionSaborRepository presentacionSaborRepo;
+//    private final PresentacionProductoRepository presentacionRepo;
+//    private final SaborPizzaRepository saborRepo;
+//
+//    @GetMapping
+//    public List<PresentacionSabor> listar() {
+//        return presentacionSaborRepo.findAll();
+//    }
+//
+//    @GetMapping("/presentacion/{presentacionId}")
+//    public List<PresentacionSabor> listarPorPresentacion(@PathVariable Long presentacionId) {
+//        return presentacionSaborRepo.findByPresentacionId(presentacionId);
+//    }
+//
+//    @PostMapping
+//    public PresentacionSabor crear(@RequestBody PresentacionSabor ps) {
+//
+//        PresentacionProducto presentacion = presentacionRepo.findById(ps.getPresentacion().getId())
+//                .orElseThrow(() -> new RuntimeException("Presentación no encontrada"));
+//
+//        SaborPizza sabor = saborRepo.findById(ps.getSabor().getId())
+//                .orElseThrow(() -> new RuntimeException("Sabor no encontrado"));
+//
+//        ps.setPresentacion(presentacion);
+//        ps.setSabor(sabor);
+//
+//        return presentacionSaborRepo.save(ps);
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public String eliminar(@PathVariable Long id) {
+//        presentacionSaborRepo.deleteById(id);
+//        return "Combinación eliminada";
+//    }
 }

@@ -32,13 +32,13 @@ public class PedidoServiceImpl implements PedidoService {
     private final InventarioService inventarioService;
     private final VentaService ventaService;
 
-    // ==========================================================
-    //              CREAR PEDIDO (Pizzas completas)
-    // ==========================================================
     @Override
     @Transactional
     public PedidoResponseDTO crearPedido(CrearPedidoRequest request) {
 
+        // ================================
+        // CREAR PEDIDO BASE
+        // ================================
         Pedido pedido = new Pedido();
         pedido.setFechaHora(LocalDateTime.now());
         pedido.setEstado(EstadoPedido.PENDIENTE);
@@ -49,84 +49,117 @@ public class PedidoServiceImpl implements PedidoService {
         double total = 0.0;
         List<DetallePedidoItem> items = new ArrayList<>();
 
-        for (DetallePedidoRequestDTO detReq : request.getDetalles()) {
 
-            // =======================
-            // 1) PRODUCTO BASE
-            // =======================
-            Producto producto = productoRepository.findById(detReq.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        // ============================================================
+        // 1) PROCESAR PRODUCTOS NORMALES (BEBIDAS, POSTRES, ETC.)
+        // ============================================================
+        if (request.getDetalles() != null && !request.getDetalles().isEmpty()) {
 
-            // =======================
-            // 2) PRESENTACIÓN
-            // =======================
-            PresentacionProducto presentacion = presentacionRepository.findById(detReq.getPresentacionId())
-                    .orElseThrow(() -> new RuntimeException("Presentación no encontrada"));
+            for (DetallePedidoRequestDTO detReq : request.getDetalles()) {
 
-            // =======================
-            // 3) SABORES
-            // =======================
-            SaborPizza sabor1 = saborPizzaRepository.findById(detReq.getSabor1Id())
-                    .orElseThrow(() -> new RuntimeException("Sabor1 no encontrado"));
+                Producto producto = productoRepository.findById(detReq.getProductoId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-            SaborPizza sabor2 = detReq.getSabor2Id() != null
-                    ? saborPizzaRepository.findById(detReq.getSabor2Id()).orElse(null)
-                    : null;
+                PresentacionProducto presentacion = presentacionRepository.findById(detReq.getPresentacionId())
+                        .orElseThrow(() -> new RuntimeException("Presentación no encontrada"));
 
-            SaborPizza sabor3 = detReq.getSabor3Id() != null
-                    ? saborPizzaRepository.findById(detReq.getSabor3Id()).orElse(null)
-                    : null;
+                // precio de la BD (producto + presentación)
+                Double precioUnit = presentacion.getPrecioBase();
+                Double subtotal = precioUnit * detReq.getCantidad();
+                total += subtotal;
 
-            // =======================
-            // 4) CALCULAR PRECIO UNITARIO
-            // =======================
-            Double precioUnit = pizzaPricingService.calcularPrecio(
-                    presentacion,
-                    sabor1,
-                    sabor2,
-                    sabor3,
-                    detReq.getPesoKg()
-            );
+                // Guardar detalle
+                DetallePedido dp = new DetallePedido();
+                dp.setPedido(pedido);
+                dp.setProducto(producto);
+                dp.setPresentacion(presentacion);
+                dp.setCantidad(detReq.getCantidad());
+                dp.setPrecioUnitario(precioUnit);
+                dp.setSubtotal(subtotal);
 
-            Double subtotal = precioUnit * detReq.getCantidad();
-            total += subtotal;
+                detalleRepository.save(dp);
 
-            // =======================
-            // 5) DESCONTAR INVENTARIO POR SABOR
-            // =======================
-            inventarioService.descontarPorSabor(sabor1, detReq.getCantidad());
-            if (sabor2 != null) inventarioService.descontarPorSabor(sabor2, detReq.getCantidad());
-            if (sabor3 != null) inventarioService.descontarPorSabor(sabor3, detReq.getCantidad());
-
-            // =======================
-            // 6) GUARDAR DETALLE
-            // =======================
-            DetallePedido dp = new DetallePedido();
-            dp.setPedido(pedido);
-            dp.setProducto(producto);
-            dp.setPresentacion(presentacion);
-            dp.setSabor1(sabor1);
-            dp.setSabor2(sabor2);
-            dp.setSabor3(sabor3);
-            dp.setPesoKg(detReq.getPesoKg());
-            dp.setCantidad(detReq.getCantidad());
-            dp.setPrecioUnitario(precioUnit);
-            dp.setSubtotal(subtotal);
-
-            detalleRepository.save(dp);
-
-            // DTO de respuesta
-            items.add(
-                    DetallePedidoItem.builder()
-                            .producto(producto.getNombre())
-                            .cantidad(detReq.getCantidad())
-                            .subtotal(subtotal)
-                            .build()
-            );
+                items.add(
+                        DetallePedidoItem.builder()
+                                .producto(producto.getNombre())
+                                .cantidad(detReq.getCantidad())
+                                .subtotal(subtotal)
+                                .build()
+                );
+            }
         }
 
+
+
+        // ============================================================
+        // 2) PROCESAR PIZZAS (PESO / REDONDA / BANDEJA)
+        // ============================================================
+        if (request.getPizzas() != null && !request.getPizzas().isEmpty()) {
+
+            for (DetallePedidoPizzaDTO pzReq : request.getPizzas()) {
+
+                PresentacionProducto presentacion = presentacionRepository.findById(pzReq.getPresentacionId())
+                        .orElseThrow(() -> new RuntimeException("Presentación no encontrada"));
+
+                SaborPizza sabor1 = saborPizzaRepository.findById(pzReq.getSabor1Id())
+                        .orElseThrow(() -> new RuntimeException("Sabor1 no encontrado"));
+
+                SaborPizza sabor2 = (pzReq.getSabor2Id() != null && pzReq.getSabor2Id() != 0)
+                        ? saborPizzaRepository.findById(pzReq.getSabor2Id()).orElse(null)
+                        : null;
+
+                SaborPizza sabor3 = (pzReq.getSabor3Id() != null && pzReq.getSabor3Id() != 0)
+                        ? saborPizzaRepository.findById(pzReq.getSabor3Id()).orElse(null)
+                        : null;
+
+                // precio según la lógica de precios de la pizza
+                Double precioUnit = pizzaPricingService.calcularPrecio(
+                        presentacion,
+                        sabor1,
+                        sabor2,
+                        sabor3,
+                        pzReq.getPesoKg()
+                );
+
+                Double subtotal = precioUnit * pzReq.getCantidad();
+                total += subtotal;
+
+                // Descontar inventario por sabor
+                inventarioService.descontarPorSabor(sabor1, pzReq.getCantidad());
+                if (sabor2 != null) inventarioService.descontarPorSabor(sabor2, pzReq.getCantidad());
+                if (sabor3 != null) inventarioService.descontarPorSabor(sabor3, pzReq.getCantidad());
+
+                // guardar detalle
+                DetallePedido dp = new DetallePedido();
+                dp.setPedido(pedido);
+                dp.setPresentacion(presentacion);
+                dp.setSabor1(sabor1);
+                dp.setSabor2(sabor2);
+                dp.setSabor3(sabor3);
+                dp.setPesoKg(pzReq.getPesoKg());
+                dp.setCantidad(pzReq.getCantidad());
+                dp.setPrecioUnitario(precioUnit);
+                dp.setSubtotal(subtotal);
+
+                detalleRepository.save(dp);
+
+                items.add(
+                        DetallePedidoItem.builder()
+                                .producto("Pizza Especial")
+                                .cantidad(pzReq.getCantidad())
+                                .subtotal(subtotal)
+                                .build()
+                );
+            }
+        }
+
+
+
+        // ================================
+        // TOTAL FINAL
+        // ================================
         pedido.setTotal(total);
-        pedido = pedidoRepository.save(pedido);
+        pedidoRepository.save(pedido);
 
         return PedidoResponseDTO.builder()
                 .pedidoId(pedido.getId())
@@ -136,6 +169,7 @@ public class PedidoServiceImpl implements PedidoService {
                 .items(items)
                 .build();
     }
+
 
     // ==========================================================
     //                    CAMBIAR ESTADO

@@ -1,5 +1,7 @@
 package com.xime.averapizza.service.impl;
 
+import com.xime.averapizza.dto.RecetaDTO;
+import com.xime.averapizza.dto.RecetaDetalleDTO;
 import com.xime.averapizza.model.*;
 import com.xime.averapizza.repository.*;
 import com.xime.averapizza.service.RecetaService;
@@ -21,7 +23,7 @@ public class RecetaServiceImpl implements RecetaService {
 
     @Override
     @Transactional
-    public Receta crearOActualizar(Long saborId, List<RecetaDetalle> detallesRequest) {
+    public RecetaDTO crearOActualizar(Long saborId, List<RecetaDetalle> detallesRequest) {
 
         SaborPizza sabor = saborRepo.findById(saborId)
                 .orElseThrow(() -> new RuntimeException("Sabor no encontrado"));
@@ -52,7 +54,41 @@ public class RecetaServiceImpl implements RecetaService {
             receta.getDetalles().add(nd);
         }
 
-        return repo.save(receta);
+        Receta guardada = repo.save(receta);
+
+        return mapToDto(guardada);
+    }
+
+    private RecetaDTO mapToDto(Receta receta) {
+        RecetaDTO dto = new RecetaDTO();
+        dto.setId(receta.getId());
+
+        if (receta.getSabor() != null) {
+            dto.setSaborId(receta.getSabor().getId());
+            dto.setSaborNombre(receta.getSabor().getNombre());
+        }
+
+        List<RecetaDetalleDTO> detallesDto = receta.getDetalles().stream()
+                .map(this::mapDetalleToDto)
+                .toList();
+
+        dto.setDetalles(detallesDto);
+
+        return dto;
+    }
+
+    private RecetaDetalleDTO mapDetalleToDto(RecetaDetalle d) {
+        RecetaDetalleDTO dto = new RecetaDetalleDTO();
+        dto.setId(d.getId());
+        dto.setCantidad(d.getCantidad());
+
+        if (d.getInsumo() != null) {
+            dto.setInsumoId(d.getInsumo().getId());
+            dto.setInsumoNombre(d.getInsumo().getNombre());
+            dto.setUnidadMedida(d.getInsumo().getUnidadMedida());
+        }
+
+        return dto;
     }
 
     @Override

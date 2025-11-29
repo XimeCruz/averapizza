@@ -129,10 +129,14 @@ public class PedidoServiceImpl implements PedidoService {
                 if (sabor2 != null) inventarioService.descontarPorSabor(sabor2, pzReq.getCantidad());
                 if (sabor3 != null) inventarioService.descontarPorSabor(sabor3, pzReq.getCantidad());
 
+                Producto producto = productoRepository.findById(1L)
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
                 // guardar detalle
                 DetallePedido dp = new DetallePedido();
                 dp.setPedido(pedido);
                 dp.setPresentacion(presentacion);
+                dp.setProducto(producto);
                 dp.setSabor1(sabor1);
                 dp.setSabor2(sabor2);
                 dp.setSabor3(sabor3);
@@ -187,15 +191,14 @@ public class PedidoServiceImpl implements PedidoService {
     //                    LISTAR POR ESTADO
     // ==========================================================
     @Override
+    @Transactional(readOnly = true)
     public List<PedidoResponseDTO> listarPorEstado(String estado) {
-        List<Pedido> pedidos = (estado == null || estado.isBlank())
-                ? pedidoRepository.findAll()
-                : pedidoRepository.findByEstado(EstadoPedido.valueOf(estado.toUpperCase()));
-
-        List<PedidoResponseDTO> resp = new ArrayList<>();
-        for (Pedido p : pedidos) resp.add(mapToResponse(p));
-        return resp;
+        List<Pedido> pedidos = pedidoRepository.findByEstado(EstadoPedido.valueOf(estado));
+        return pedidos.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
+
 
     // ==========================================================
     //                    COCINA

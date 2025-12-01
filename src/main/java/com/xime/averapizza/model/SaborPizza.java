@@ -29,4 +29,6 @@ public class SaborPizza {
 
     @OneToOne(mappedBy = "sabor", cascade = CascadeType.ALL)
     private Receta receta;
+
+    private Boolean activo = true;
 }

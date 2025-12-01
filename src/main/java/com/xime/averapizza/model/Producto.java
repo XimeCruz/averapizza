@@ -23,6 +23,8 @@ public class Producto {
     // true para pizzas
     private Boolean tieneSabores;
 
+    private Boolean activo = true;
+
     //    private String descripcion;
 //    private Double precio;
 //    private Boolean conReceta;

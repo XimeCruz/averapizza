@@ -26,8 +26,9 @@ public class PresentacionProducto {
 
 //
     private Double precioBase;       // solo si aplica (redonda o bandeja) y BEBIDAS
-//
-//
+
+    private Boolean activo = true;
+
     public enum TipoPresentacion {
         PESO,
         REDONDA,

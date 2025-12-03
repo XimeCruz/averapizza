@@ -23,7 +23,8 @@ public class Rol {
     public enum RolNombre {
         ADMIN,
         CAJERO,
-        CLIENTE
+        CLIENTE,
+        COCINA
     }
 
 //    private String nombre;

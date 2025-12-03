@@ -27,6 +27,7 @@ public class SaborPizza {
     @OneToMany(mappedBy = "sabor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PrecioSaborPresentacion> precios;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "sabor", cascade = CascadeType.ALL)
     private Receta receta;
 

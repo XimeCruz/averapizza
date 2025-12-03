@@ -29,5 +29,10 @@ public class PresentacionProductoServiceImpl implements PresentacionProductoServ
         return repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Presentación no existe"));
     }
+
+    @Override
+    public List<PresentacionProducto> obtenerPorProductoId(Integer productoId) {
+        return repo.findByProductoId(productoId);
+    }
 }
 

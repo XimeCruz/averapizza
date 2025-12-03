@@ -119,4 +119,8 @@ public class ReporteServiceImpl implements ReporteService {
                 ))
                 .toList();
     }
+
+    public List<VentasPorTipoDTO> ventasPorTipo(LocalDateTime inicio, LocalDateTime fin) {
+        return ventaRepo.obtenerVentasPorTipo(inicio, fin);
+    }
 }

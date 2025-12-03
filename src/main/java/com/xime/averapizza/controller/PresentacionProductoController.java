@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/presentaciones")
+@RequestMapping("/cliente/presentaciones")
 @RequiredArgsConstructor
 @Tag(name = "Presentaciones de Producto")
 public class PresentacionProductoController {
@@ -39,5 +39,18 @@ public class PresentacionProductoController {
     public String eliminar(@PathVariable Long id) {
         presentacionRepo.deleteById(id);
         return "Presentación eliminada";
+    }
+
+    @GetMapping("/producto/{productoId}")
+    public ResponseEntity<List<PresentacionProducto>> obtenerPresentacionesPorProducto(
+            @PathVariable Integer productoId) {
+
+        List<PresentacionProducto> lista = service.obtenerPorProductoId(productoId);
+
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(lista);
     }
 }

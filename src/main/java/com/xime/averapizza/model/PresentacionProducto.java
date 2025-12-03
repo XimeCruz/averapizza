@@ -24,7 +24,8 @@ public class PresentacionProducto {
 //    private Producto producto;
 //
 
-//
+    private Integer productoId;
+
     private Double precioBase;       // solo si aplica (redonda o bandeja) y BEBIDAS
 
     private Boolean activo = true;

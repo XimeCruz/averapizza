@@ -1,12 +1,10 @@
 package com.xime.averapizza.controller;
 
-import com.xime.averapizza.dto.InsumoBajoStockDTO;
-import com.xime.averapizza.dto.ProductoTopDTO;
-import com.xime.averapizza.dto.ReporteDiarioResponse;
-import com.xime.averapizza.dto.VentaResumenDTO;
+import com.xime.averapizza.dto.*;
 import com.xime.averapizza.service.ReporteService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,5 +46,13 @@ public class ReporteController {
     @GetMapping("/inventario/bajo-stock")
     public ResponseEntity<List<InsumoBajoStockDTO>> bajoStock() {
         return ResponseEntity.ok(reporteService.inventarioBajoStock());
+    }
+
+    @GetMapping("/ventas-por-tipo")
+    public List<VentasPorTipoDTO> getVentasPorTipo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin
+    ) {
+        return reporteService.ventasPorTipo(inicio, fin);
     }
 }

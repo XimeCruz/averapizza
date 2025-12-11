@@ -13,4 +13,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     List<Pedido> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
 
+    Long countByEstado(EstadoPedido estado);
+
+    Long countByUsuarioId(Integer usuarioId);
+
+    List<Pedido> findByUsuarioIdAndEstadoNot(Integer usuarioId, EstadoPedido estado);
+
+    List<Pedido> findByUsuarioIdOrderByFechaHoraDesc(Integer usuarioId);
+
 }

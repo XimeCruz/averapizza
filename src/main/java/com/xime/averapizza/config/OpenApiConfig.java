@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
         ),
         servers = {
                 @Server(
-                        url = "https://averapizza.servernux.com/api",
+                        url = "https://averapizza.servernux.com/bck/api",
                         description = "Servidor de producción"
                 ),
                 @Server(

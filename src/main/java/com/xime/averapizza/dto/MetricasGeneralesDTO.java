@@ -13,10 +13,7 @@ public class MetricasGeneralesDTO {
     private Long totalPedidos;
     private Double tasaEntrega;
     private Long totalProductos;
-    private Integer pedidosPendientes;
-    private Integer pedidosEnCocina;
-    private Integer pedidosEntregados;
-    private VentasDiaDTO ventasDelDia;
-    private Long totalClientes;
-    private Long clientesActivos;
+    private Integer alertasStock;
+
+    private MetricasDiaDTO metricasDia;
 }

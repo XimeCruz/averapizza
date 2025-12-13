@@ -27,6 +27,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final InsumoRepository insumoRepository;
     //private final VentaRepository ventaRepository;
     private final DetallePedidoRepository detallePedidoRepository;
+    private final SaborPizzaRepository saborPizzaRepository;
     private final PasswordEncoder passwordEncoder;
 
     // ============ MÉTRICAS GENERALES ============
@@ -36,14 +37,56 @@ public class DashboardServiceImpl implements DashboardService {
         return MetricasGeneralesDTO.builder()
                 .totalPedidos(contarTotalPedidos())
                 .tasaEntrega(calcularTasaEntrega())
-                .totalProductos(contarTotalProductos())
-                .pedidosPendientes(contarPedidosPendientes())
-                .pedidosEnCocina(contarPedidosEnCocina())
-                .pedidosEntregados(contarPedidosEntregados())
-                .ventasDelDia(obtenerVentasDelDia())
-                .totalClientes(contarTotalClientes())
-                .clientesActivos(contarClientesActivos())
+                .totalProductos(contarTotalProductosConSabores())
+                .alertasStock(contarAlertasStock())
+                .metricasDia(obtenerMetricasDia())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MetricasDiaDTO obtenerMetricasDia() {
+        LocalDate hoy = LocalDate.now();
+        LocalDateTime inicioDia = LocalDateTime.of(hoy, LocalTime.MIN);
+        LocalDateTime finDia = LocalDateTime.of(hoy, LocalTime.MAX);
+
+        // Ventas del día
+        List<Venta> ventasDelDia = ventaRepository.findByFechaBetween(inicioDia, finDia);
+        Double totalVentas = ventasDelDia.stream()
+                .mapToDouble(Venta::getTotal)
+                .sum();
+
+        // Pedidos del día por estado
+        Integer pedidosPendientes = pedidoRepository.countByEstadoAndFechaHoraBetween(
+                EstadoPedido.PENDIENTE, inicioDia, finDia);
+
+        Integer pedidosEnPreparacion = pedidoRepository.countByEstadoAndFechaHoraBetween(
+                EstadoPedido.EN_PREPARACION, inicioDia, finDia);
+
+        Integer pedidosEntregados = pedidoRepository.countByEstadoAndFechaHoraBetween(
+                EstadoPedido.ENTREGADO, inicioDia, finDia);
+
+        return MetricasDiaDTO.builder()
+                .fecha(hoy)
+                .totalVentas(Math.round(totalVentas * 100.0) / 100.0)
+                .numeroVentas(ventasDelDia.size())
+                .pedidosPendientes(pedidosPendientes)
+                .pedidosEnPreparacion(pedidosEnPreparacion)
+                .pedidosEntregados(pedidosEntregados)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Integer contarAlertasStock() {
+        return Math.toIntExact(
+                insumoRepository.countByStockActualLessThanEqualStockMinimoAndActivoTrue()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Long contarTotalProductosConSabores() {
+        Long productosBase = productoRepository.countByActivoTrue();
+        Long saboresActivos = saborPizzaRepository.countByActivoTrue();
+        return productosBase + saboresActivos;
     }
 
     @Transactional(readOnly = true)
@@ -387,4 +430,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .ticketPromedio(ticketProm)
                 .build();
     }
+
+
 }

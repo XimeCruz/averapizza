@@ -33,7 +33,12 @@ public class PresentacionProducto {
     public enum TipoPresentacion {
         PESO,
         REDONDA,
-        BANDEJA
+        BANDEJA,
+
+        ML_330,
+        ML_750,
+        L_2,
+        L_3
     }
 
 }

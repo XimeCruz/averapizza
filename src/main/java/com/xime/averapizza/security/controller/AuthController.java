@@ -1,5 +1,6 @@
 package com.xime.averapizza.security.controller;
 
+import com.xime.averapizza.dto.ProductoCompletoDTO;
 import com.xime.averapizza.model.Rol;
 import com.xime.averapizza.model.Usuario;
 import com.xime.averapizza.repository.RolRepository;
@@ -7,14 +8,17 @@ import com.xime.averapizza.repository.UsuarioRepository;
 import com.xime.averapizza.security.jwt.JwtService;
 import com.xime.averapizza.security.model.AuthRequest;
 import com.xime.averapizza.security.model.AuthResponse;
+import com.xime.averapizza.service.ProductoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -28,6 +32,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final RolRepository rolRepository;
+    private final ProductoService service;
 
     @PostMapping("/register")
     public AuthResponse register(@RequestBody Usuario usuario,
@@ -65,6 +70,20 @@ public class AuthController {
                 .orElse(Rol.RolNombre.CLIENTE));
 
         return new AuthResponse(token, user.getNombre(), user.getCorreo(), rol);
+    }
+
+
+    @GetMapping("/completo")
+    public ResponseEntity<List<ProductoCompletoDTO>> obtenerTodos() {
+        return ResponseEntity.ok(service.obtenerTodosLosProductos());
+    }
+
+    // GET /api/productos/completo/PIZZA
+    // GET /api/productos/completo/BEBIDA
+    @GetMapping("/completo/{tipo}")
+    public ResponseEntity<List<ProductoCompletoDTO>> obtenerPorTipo(
+            @PathVariable String tipo) {
+        return ResponseEntity.ok(service.obtenerProductosPorTipo(tipo));
     }
 }
 

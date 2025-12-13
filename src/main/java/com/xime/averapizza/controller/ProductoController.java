@@ -1,5 +1,6 @@
 package com.xime.averapizza.controller;
 
+import com.xime.averapizza.dto.ProductoCompletoDTO;
 import com.xime.averapizza.model.Producto;
 import com.xime.averapizza.repository.ProductoRepository;
 import com.xime.averapizza.service.ProductoService;
@@ -43,5 +44,6 @@ public class ProductoController {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
 }
 

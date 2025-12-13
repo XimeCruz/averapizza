@@ -18,4 +18,7 @@ public interface InsumoRepository extends JpaRepository<Insumo, Long> {
     @Query("SELECT i FROM Insumo i WHERE i.stockActual <= i.stockMinimo AND i.activo = true")
     List<Insumo> findByStockActualLessThanEqualStockMinimo();
 
+    @Query("SELECT COUNT(i) FROM Insumo i WHERE i.stockActual <= i.stockMinimo AND i.activo = true")
+    Long countByStockActualLessThanEqualStockMinimoAndActivoTrue();
+
 }

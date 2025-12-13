@@ -1,5 +1,6 @@
 package com.xime.averapizza.service.impl;
 
+import com.xime.averapizza.dto.ProductoCompletoDTO;
 import com.xime.averapizza.model.Producto;
 import com.xime.averapizza.repository.ProductoRepository;
 import com.xime.averapizza.service.ProductoService;
@@ -42,5 +43,14 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void eliminar(Long id) {
         repository.deleteById(id);
+    }
+
+    public List<ProductoCompletoDTO> obtenerTodosLosProductos() {
+        return repository.findAllProductosCompletos();
+    }
+
+    public List<ProductoCompletoDTO> obtenerProductosPorTipo(String tipo) {
+        Producto.TipoProducto tipoProducto = Producto.TipoProducto.valueOf(tipo.toUpperCase());
+        return repository.findProductosByTipo(tipoProducto);
     }
 }

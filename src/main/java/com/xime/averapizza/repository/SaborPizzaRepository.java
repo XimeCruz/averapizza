@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface SaborPizzaRepository extends JpaRepository<SaborPizza, Long> {
     List<SaborPizza> findByProductoId(Long productoId);
+
+    Long countByActivoTrue();
 }
 

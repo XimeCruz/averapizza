@@ -1,5 +1,6 @@
 package com.xime.averapizza.service;
 
+import com.xime.averapizza.dto.ProductoCompletoDTO;
 import com.xime.averapizza.model.Producto;
 
 import java.util.List;
@@ -10,5 +11,9 @@ public interface ProductoService {
     Producto obtener(Long id);
     List<Producto> listar();
     void eliminar(Long id);
+
+    List<ProductoCompletoDTO> obtenerTodosLosProductos();
+
+    List<ProductoCompletoDTO> obtenerProductosPorTipo(String tipo);
 }
 

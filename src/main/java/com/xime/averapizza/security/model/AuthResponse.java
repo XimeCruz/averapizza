@@ -14,5 +14,7 @@ public class AuthResponse {
 
     private String rol;
 
+    private Integer usuarioId;
+
 }
 

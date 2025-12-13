@@ -309,6 +309,7 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PedidoResponseDTO> listarPedidosHoy() {
 
         LocalDateTime inicio = LocalDate.now().atStartOfDay();
@@ -316,12 +317,14 @@ public class PedidoServiceImpl implements PedidoService {
 
         List<Pedido> lista = pedidoRepository.findByFechaHoraBetween(inicio, fin);
 
+
         return lista.stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PedidoResponseDTO> listarPorRango(String inicio, String fin) {
 
         LocalDateTime ini = LocalDateTime.parse(inicio);

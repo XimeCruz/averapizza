@@ -45,6 +45,7 @@ public class PedidoController {
     // === 🟦 CAJERO: Listar pedidos del día ===
     @GetMapping("/hoy")
     public ResponseEntity<List<PedidoResponseDTO>> pedidosHoy() {
+        System.out.println("Entro");
         return ResponseEntity.ok(pedidoService.listarPedidosHoy());
     }
 
@@ -58,40 +59,3 @@ public class PedidoController {
     }
 }
 
-//public class PedidoController {
-//
-//    private final PedidoService pedidoService;
-//
-//    @PostMapping
-//    public PedidoResponseDTO crearPedido(@RequestBody CrearPedidoRequest request) {
-//        return pedidoService.crearPedido(request);
-//    }
-//
-//    @PutMapping("/{id}/estado")
-//    public PedidoResponseDTO cambiarEstado(
-//            @PathVariable Long id,
-//            @RequestParam String estado
-//    ) {
-//        return pedidoService.cambiarEstado(id, estado);
-//    }
-//
-//    // Listar pedidos por estado (ej: LISTO, ENTREGADO, CANCELADO)
-//    @GetMapping
-//    public List<PedidoResponseDTO> listar(
-//            @RequestParam(required = false) String estado
-//    ) {
-//        return pedidoService.listarPorEstado(estado);
-//    }
-//
-//    // Marcar pedido como ENTREGADO (desde cajero)
-//    @PutMapping("/{id}/entregar")
-//    public PedidoResponseDTO marcarEntregado(@PathVariable Long id) {
-//        return pedidoService.marcarEntregado(id);
-//    }
-//
-//    // Cancelar pedido
-//    @PutMapping("/{id}/cancelar")
-//    public PedidoResponseDTO cancelar(@PathVariable Long id) {
-//        return pedidoService.cancelar(id);
-//    }
-//}

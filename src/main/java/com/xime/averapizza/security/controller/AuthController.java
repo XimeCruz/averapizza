@@ -51,7 +51,7 @@ public class AuthController {
         var user = usuario;
         String token = jwtService.generateToken(user.getCorreo());
 
-        return new AuthResponse(token, usuario.getNombre(), user.getCorreo(), rol.getNombre().toString());
+        return new AuthResponse(token, usuario.getNombre(), user.getCorreo(), rol.getNombre().toString(), Math.toIntExact(user.getId()));
         //return "Usuario registrado con rol: " + rolNombre;
     }
 
@@ -69,7 +69,7 @@ public class AuthController {
                 .map(Rol::getNombre)
                 .orElse(Rol.RolNombre.CLIENTE));
 
-        return new AuthResponse(token, user.getNombre(), user.getCorreo(), rol);
+        return new AuthResponse(token, user.getNombre(), user.getCorreo(), rol, Math.toIntExact(user.getId()));
     }
 
 

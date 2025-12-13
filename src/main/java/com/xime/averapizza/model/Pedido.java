@@ -50,7 +50,7 @@ public class Pedido {
             for (DetallePedido det : pedido.getDetalles()) {
                 items.add(
                         DetallePedidoItem.builder()
-                                .producto(det.getProducto().getNombre())
+                                .productoNombre(det.getProducto().getNombre())
                                 .cantidad(det.getCantidad())
                                 .subtotal(det.getSubtotal())
                                 .build()

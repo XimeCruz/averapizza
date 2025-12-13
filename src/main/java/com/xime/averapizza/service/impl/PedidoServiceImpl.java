@@ -31,6 +31,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final PizzaPricingService pizzaPricingService;
     private final InventarioService inventarioService;
     private final VentaService ventaService;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -81,7 +82,7 @@ public class PedidoServiceImpl implements PedidoService {
 
                 items.add(
                         DetallePedidoItem.builder()
-                                .producto(producto.getNombre())
+                                .productoNombre(producto.getNombre())
                                 .cantidad(detReq.getCantidad())
                                 .subtotal(subtotal)
                                 .build()
@@ -149,7 +150,7 @@ public class PedidoServiceImpl implements PedidoService {
 
                 items.add(
                         DetallePedidoItem.builder()
-                                .producto("Pizza Especial")
+                                .productoNombre("Pizza Especial")
                                 .cantidad(pzReq.getCantidad())
                                 .subtotal(subtotal)
                                 .build()
@@ -286,18 +287,29 @@ public class PedidoServiceImpl implements PedidoService {
         for (DetallePedido det : pedido.getDetalles()) {
             items.add(
                     DetallePedidoItem.builder()
-                            .producto(det.getProducto().getNombre())
+                            .id(Math.toIntExact(det.getId()))
+                            .pedidoId(Math.toIntExact(det.getPedido().getId()))
+                            .productoNombre(det.getProducto().getNombre())
+                            .presentacion(det.getPresentacion().getTipo().name())
+                            .sabor1(det.getSabor1() != null ? det.getSabor1().getNombre() : "")
+                            .sabor2(det.getSabor2() != null ? det.getSabor2().getNombre() : "")
+                            .sabor3(det.getSabor3() != null ? det.getSabor3().getNombre() : "")
                             .cantidad(det.getCantidad())
                             .subtotal(det.getSubtotal())
                             .build()
             );
         }
+        Usuario usuario = usuarioRepository.findById(Long.valueOf(pedido.getUsuarioId()))
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + pedido.getUsuarioId()));
 
         return PedidoResponseDTO.builder()
                 .pedidoId(pedido.getId())
                 .total(pedido.getTotal())
                 .estado(pedido.getEstado().name())
                 .tipoServicio(pedido.getTipoServicio().name())
+                .fechaHora(pedido.getFechaHora())
+                .idUsuario(pedido.getUsuarioId())
+                .nombreUsuario(usuario.getNombre())
                 .items(items)
                 .build();
     }

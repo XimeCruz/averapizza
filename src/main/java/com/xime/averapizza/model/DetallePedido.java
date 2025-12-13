@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -47,6 +49,21 @@ public class DetallePedido {
 
     private Double pesoKg; // solo si presentacion = PESO
 
+    public List<SaborPizza> getSabores() {
+        List<SaborPizza> sabores = new ArrayList<>();
+        if (sabor1 != null) sabores.add(sabor1);
+        if (sabor2 != null) sabores.add(sabor2);
+        if (sabor3 != null) sabores.add(sabor3);
+        return sabores;
+    }
+
+    public int getNumeroSabores() {
+        int count = 0;
+        if (sabor1 != null) count++;
+        if (sabor2 != null) count++;
+        if (sabor3 != null) count++;
+        return count > 0 ? count : 1;
+    }
 
 }
 

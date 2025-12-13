@@ -1,7 +1,9 @@
 package com.xime.averapizza.service;
 
 import com.xime.averapizza.dto.CrearRecetaRequest;
+import com.xime.averapizza.dto.InsumoCalculadoDTO;
 import com.xime.averapizza.dto.RecetaDTO;
+import com.xime.averapizza.model.DetallePedido;
 import com.xime.averapizza.model.Receta;
 import com.xime.averapizza.model.RecetaDetalle;
 import com.xime.averapizza.model.SaborPizza;
@@ -16,5 +18,6 @@ public interface RecetaService {
 
     RecetaDTO crearOActualizar(Long saborId, List<RecetaDetalle> detalles);
     Receta obtenerPorSabor(Long saborId);
+    List<InsumoCalculadoDTO> calcularInsumosParaDetalle(DetallePedido detalle);
 }
 

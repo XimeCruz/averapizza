@@ -31,6 +31,8 @@ public class Pedido {
 
     private LocalDateTime fechaHora = LocalDateTime.now();
 
+    private LocalDateTime fechaListo;
+
     //@Column(precision = 10, scale = 2)
     private Double total;
 

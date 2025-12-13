@@ -3,4 +3,10 @@ package com.xime.averapizza.repository;
 import com.xime.averapizza.model.MovimientoInventario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MovimientoInventarioRepository extends JpaRepository<MovimientoInventario, Long> {}
+import java.util.List;
+
+public interface MovimientoInventarioRepository extends JpaRepository<MovimientoInventario, Long> {
+
+    List<MovimientoInventario> findByInsumoIdOrderByFechaHoraDesc(Long insumoId);
+
+}

@@ -1,5 +1,6 @@
 package com.xime.averapizza.service.impl;
 
+import com.xime.averapizza.dto.InsumoCalculadoDTO;
 import com.xime.averapizza.dto.RecetaDTO;
 import com.xime.averapizza.dto.RecetaDetalleDTO;
 import com.xime.averapizza.model.*;
@@ -9,8 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class RecetaServiceImpl implements RecetaService {
     private final RecetaDetalleRepository detalleRepo;
     private final SaborPizzaRepository saborRepo;
     private final InsumoRepository insumoRepo;
+    private final RecetaDetalleRepository recetaDetalleRepository;
 
     @Override
     @Transactional
@@ -96,5 +98,62 @@ public class RecetaServiceImpl implements RecetaService {
         return repo.findBySaborId(saborId)
                 .orElseThrow(() -> new RuntimeException("Este sabor no tiene receta"));
     }
+
+
+    @Override
+    public List<InsumoCalculadoDTO> calcularInsumosParaDetalle(DetallePedido detalle) {
+
+        if (detalle.getProducto().getTipoProducto() != Producto.TipoProducto.PIZZA) {
+            return Collections.emptyList();
+        }
+
+        List<SaborPizza> sabores = detalle.getSabores();
+        if (sabores.isEmpty()) {
+            throw new RuntimeException("No hay sabores definidos en el detalle del pedido");
+        }
+
+        Long presentacionId = detalle.getPresentacion().getId();
+        Integer numeroSabores = detalle.getNumeroSabores();
+        Integer cantidadPizzas = detalle.getCantidad();
+
+        // Obtener IDs de sabores
+        List<Long> saborIds = sabores.stream()
+                .map(SaborPizza::getId)
+                .collect(Collectors.toList());
+
+        // Obtener recetas de todos los sabores para esta presentación
+        List<RecetaDetalle> recetasDetalles = recetaDetalleRepository
+                .findByMultipleSaboresAndPresentacion(saborIds, presentacionId);
+
+        if (recetasDetalles.isEmpty()) {
+            throw new RuntimeException(
+                    "No hay recetas configuradas para los sabores y presentación seleccionados"
+            );
+        }
+
+        // Agrupar por insumo y sumar cantidades
+        Map<Insumo, Double> insumosPorCantidad = new HashMap<>();
+
+        for (RecetaDetalle rd : recetasDetalles) {
+            // Cantidad por pizza = cantidadBase / numeroSabores * cantidadPizzas
+            Double cantidadPorPizza = rd.getCantidad() / numeroSabores;
+            Double cantidadTotal = cantidadPorPizza * cantidadPizzas;
+
+            Insumo insumo = rd.getInsumo();
+            insumosPorCantidad.merge(insumo, cantidadTotal, Double::sum);
+        }
+
+        // Convertir a DTO
+        return insumosPorCantidad.entrySet().stream()
+                .map(entry -> InsumoCalculadoDTO.builder()
+                        .insumoId(entry.getKey().getId())
+                        .nombreInsumo(entry.getKey().getNombre())
+                        .cantidadNecesaria(entry.getValue())
+                        .unidadMedida(entry.getKey().getUnidadMedida())
+                        .stockActual(entry.getKey().getStockActual())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
 

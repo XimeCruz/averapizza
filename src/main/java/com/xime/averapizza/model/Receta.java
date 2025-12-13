@@ -18,16 +18,6 @@ public class Receta {
     @JoinColumn(name = "sabor_id")
     private SaborPizza sabor;
 
-//    @ManyToOne
-//    @JoinColumn(name = "producto_id")
-//    private Producto producto;
-
-//    @ManyToOne
-//    @JoinColumn(name = "insumo_id")
-//    private Insumo insumo;
-//
-//    private Double cantidad;
-
     private boolean activo = true;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -24,5 +24,16 @@ public class Insumo {
 //    @OneToMany(mappedBy = "insumo", cascade = CascadeType.ALL)
 //    private List<MovimientoInventario> movimientos;
 
+    public void descontar(Double cantidad) {
+        if (this.stockActual.compareTo(cantidad) < 0) {
+            throw new RuntimeException("Stock insuficiente de: " + this.nombre);
+        }
+        this.stockActual = this.stockActual - cantidad;
+    }
+
+    public boolean tieneStockSuficiente(Double cantidad) {
+        return this.stockActual.compareTo(cantidad) >= 0;
+    }
+
 }
 

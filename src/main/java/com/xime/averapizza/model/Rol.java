@@ -27,9 +27,4 @@ public class Rol {
         COCINA
     }
 
-//    private String nombre;
-//
-//    @ManyToMany(mappedBy = "roles")
-//    private Set<Usuario> usuarios;
-
 }

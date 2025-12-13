@@ -25,20 +25,6 @@ public class Producto {
 
     private Boolean activo = true;
 
-    //    private String descripcion;
-//    private Double precio;
-//    private Boolean conReceta;
-
-//    @Column(name = "con_receta")
-//    private Boolean conReceta;
-
-//    @ManyToOne
-//    @JoinColumn(name = "sucursal_id")
-//    private Sucursal sucursal;
-//
-//    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Receta> recetas;
-
     public enum TipoProducto {
         PIZZA,
         BEBIDA,

@@ -21,4 +21,8 @@ public class RecetaDetalle {
     @ManyToOne
     @JoinColumn(name = "receta_id")
     private Receta receta;
+
+    @ManyToOne
+    @JoinColumn(name = "presentacion_id", nullable = false)
+    private PresentacionProducto presentacion;
 }

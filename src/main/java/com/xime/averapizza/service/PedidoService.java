@@ -1,8 +1,9 @@
 package com.xime.averapizza.service;
 
 import com.xime.averapizza.dto.CrearPedidoRequest;
-import com.xime.averapizza.dto.PedidoRequestDTO;
 import com.xime.averapizza.dto.PedidoResponseDTO;
+import com.xime.averapizza.model.EstadoPedido;
+import com.xime.averapizza.model.Pedido;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface PedidoService {
 
     PedidoResponseDTO crearPedido(CrearPedidoRequest request);
 
-    PedidoResponseDTO cambiarEstado(Long pedidoId, String nuevoEstado);
+    Pedido cambiarEstado(Long pedidoId, EstadoPedido nuevoEstado, Integer usuarioId);
 
     PedidoResponseDTO obtenerPedidoDTO(Long pedidoId);
 
@@ -35,6 +36,8 @@ public interface PedidoService {
     PedidoResponseDTO marcarEntregado(Long pedidoId);
 
     PedidoResponseDTO cancelar(Long pedidoId);
+
+    Pedido obtenerPorId(Long pedidoId);
 
 }
 

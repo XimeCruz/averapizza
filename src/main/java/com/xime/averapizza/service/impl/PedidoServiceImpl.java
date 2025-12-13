@@ -3,10 +3,7 @@ package com.xime.averapizza.service.impl;
 import com.xime.averapizza.dto.*;
 import com.xime.averapizza.model.*;
 import com.xime.averapizza.repository.*;
-import com.xime.averapizza.service.InventarioService;
-import com.xime.averapizza.service.PedidoService;
-import com.xime.averapizza.service.PizzaPricingService;
-import com.xime.averapizza.service.VentaService;
+import com.xime.averapizza.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +12,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,9 @@ public class PedidoServiceImpl implements PedidoService {
     private final InventarioService inventarioService;
     private final VentaService ventaService;
     private final UsuarioRepository usuarioRepository;
+
+    private final RecetaService recetaService;
+    private final InsumoService insumoService;
 
     @Override
     @Transactional
@@ -180,12 +182,59 @@ public class PedidoServiceImpl implements PedidoService {
     //                    CAMBIAR ESTADO
     // ==========================================================
     @Override
-    @Transactional
-    public PedidoResponseDTO cambiarEstado(Long pedidoId, String nuevoEstado) {
-        Pedido pedido = obtenerPedido(pedidoId);
-        pedido.setEstado(EstadoPedido.valueOf(nuevoEstado));
-        pedidoRepository.save(pedido);
-        return mapToResponse(pedido);
+    public Pedido cambiarEstado(Long pedidoId, EstadoPedido nuevoEstado, Integer usuarioId) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        EstadoPedido estadoAnterior = pedido.getEstado();
+
+        if (nuevoEstado == EstadoPedido.LISTO && estadoAnterior != EstadoPedido.LISTO) {
+            descontarInsumosDelPedido(pedido, usuarioId);
+            pedido.setFechaListo(LocalDateTime.now());
+        }
+
+        pedido.setEstado(nuevoEstado);
+        return pedidoRepository.save(pedido);
+    }
+
+    private void descontarInsumosDelPedido(Pedido pedido, Integer usuarioId) {
+        // Recopilar TODOS los insumos necesarios del pedido
+        List<InsumoCalculadoDTO> todosLosInsumos = new ArrayList<>();
+
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            List<InsumoCalculadoDTO> insumosDetalle =
+                    recetaService.calcularInsumosParaDetalle(detalle);
+            todosLosInsumos.addAll(insumosDetalle);
+        }
+
+        // Agrupar insumos repetidos
+        Map<Long, InsumoCalculadoDTO> insumosAgrupados = todosLosInsumos.stream()
+                .collect(Collectors.toMap(
+                        InsumoCalculadoDTO::getInsumoId,
+                        dto -> dto,
+                        (dto1, dto2) -> {
+                            dto1.setCantidadNecesaria(
+                                    dto1.getCantidadNecesaria() + dto2.getCantidadNecesaria()
+                            );
+                            return dto1;
+                        }
+                ));
+
+        List<InsumoCalculadoDTO> insumosFinales = new ArrayList<>(insumosAgrupados.values());
+
+        // Verificar stock ANTES de descontar
+        insumoService.verificarStockDisponible(insumosFinales);
+
+        // Descontar cada insumo
+        String referencia = "PEDIDO #" + pedido.getId();
+        for (InsumoCalculadoDTO insumo : insumosFinales) {
+            insumoService.descontarStock(
+                    insumo.getInsumoId(),
+                    insumo.getCantidadNecesaria(),
+                    referencia,
+                    usuarioId
+            );
+        }
     }
 
     // ==========================================================
@@ -271,6 +320,11 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoRepository.save(pedido);
 
         return mapToResponse(pedido);
+    }
+
+    @Override
+    public Pedido obtenerPorId(Long pedidoId) {
+        return pedidoRepository.findById(pedidoId).orElse(null);
     }
 
     // ==========================================================

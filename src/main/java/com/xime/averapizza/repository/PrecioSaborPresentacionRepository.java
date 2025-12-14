@@ -13,4 +13,7 @@ public interface PrecioSaborPresentacionRepository extends JpaRepository<PrecioS
     Optional<PrecioSaborPresentacion> findBySaborIdAndPresentacionId(Long saborId, Long presentacionId);
 
     List<PrecioSaborPresentacion> findBySaborId(Long saborId);
+
+    List<PrecioSaborPresentacion> findBySaborIdAndPresentacionActivoTrue(Long saborId);
+
 }

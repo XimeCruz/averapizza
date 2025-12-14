@@ -57,4 +57,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     """)
     List<ProductoCompletoDTO> findProductosByTipo(Producto.TipoProducto tipo);
 
+    List<Producto> findByTipoProductoAndActivoTrue(Producto.TipoProducto tipoProducto);
+    List<Producto> findByActivoTrue();
+
 }

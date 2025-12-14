@@ -14,4 +14,7 @@ public interface PresentacionProductoRepository extends JpaRepository<Presentaci
 
     List<PresentacionProducto> findByProductoId(Integer productoId);
 
+    List<PresentacionProducto> findByProductoIdAndActivoTrue(Integer productoId);
+    List<PresentacionProducto> findByActivoTrue();
+
 }

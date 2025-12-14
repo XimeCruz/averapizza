@@ -31,18 +31,19 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/auth/**",
-                                "/api/auth/**"
-                        ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/cocina/**").hasAnyRole("CAJERO", "ADMIN")
-                        .requestMatchers("/cajero/**").hasAnyRole("CAJERO", "ADMIN")
-                        .requestMatchers("/cliente/**").hasAnyRole("CLIENTE", "CAJERO", "ADMIN")
-                        .anyRequest().authenticated()
+//                        .requestMatchers(
+//                                "/v3/api-docs/**",
+//                                "/swagger-ui/**",
+//                                "/swagger-ui.html",
+//                                "/auth/**",
+//                                "/api/auth/**"
+//                        ).permitAll()
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/cocina/**").hasAnyRole("CAJERO", "ADMIN")
+//                        .requestMatchers("/cajero/**").hasAnyRole("CAJERO", "ADMIN")
+//                        .requestMatchers("/cliente/**").hasAnyRole("CLIENTE", "CAJERO", "ADMIN")
+//                        .anyRequest().authenticated()
+                                .requestMatchers("*").permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

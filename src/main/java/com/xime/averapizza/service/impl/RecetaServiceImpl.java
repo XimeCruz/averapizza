@@ -1,8 +1,6 @@
 package com.xime.averapizza.service.impl;
 
-import com.xime.averapizza.dto.InsumoCalculadoDTO;
-import com.xime.averapizza.dto.RecetaDTO;
-import com.xime.averapizza.dto.RecetaDetalleDTO;
+import com.xime.averapizza.dto.*;
 import com.xime.averapizza.model.*;
 import com.xime.averapizza.repository.*;
 import com.xime.averapizza.service.RecetaService;
@@ -17,20 +15,143 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecetaServiceImpl implements RecetaService {
 
-    private final RecetaRepository repo;
+    private final RecetaRepository recetaRepository;
     private final RecetaDetalleRepository detalleRepo;
-    private final SaborPizzaRepository saborRepo;
-    private final InsumoRepository insumoRepo;
+    private final SaborPizzaRepository saborRepository;
+    private final InsumoRepository insumoRepository;
     private final RecetaDetalleRepository recetaDetalleRepository;
+    private final PresentacionProductoRepository presentacionRepository;
+
+    @Override
+    public boolean tieneReceta(Long saborId) {
+        return recetaRepository.existsBySaborId(saborId);
+    }
+
+    @Override
+    public RecetaDTO obtenerPorSabor(Long saborId) {
+        Receta receta = recetaRepository.findBySaborIdWithDetalles(saborId)
+                .orElseThrow(() -> new RuntimeException("El sabor no tiene receta configurada"));
+
+        return convertirADTO(receta);
+    }
+
+    @Override
+    public RecetaDTO crear(CrearRecetaRequest request) {
+        // Verificar que el sabor existe
+        SaborPizza sabor = saborRepository.findById(request.getSaborId())
+                .orElseThrow(() -> new RuntimeException("Sabor no encontrado"));
+
+        // Verificar que no tenga receta ya
+        if (tieneReceta(request.getSaborId())) {
+            throw new RuntimeException("Este sabor ya tiene una receta. Use actualizar en su lugar.");
+        }
+
+        // Crear receta
+        Receta receta = new Receta();
+        receta.setSabor(sabor);
+        receta.setActivo(true);
+        receta.setDetalles(new ArrayList<>());
+        receta = recetaRepository.save(receta);
+
+        // Crear detalles
+        for (DetalleInsumoRequest detRequest : request.getDetalles()) {
+            agregarDetalle(receta, detRequest);
+        }
+
+        return convertirADTO(receta);
+    }
+
+    @Override
+    public RecetaDTO actualizar(Long recetaId, CrearRecetaRequest request) {
+        Receta receta = recetaRepository.findById(recetaId)
+                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+
+        // Eliminar detalles anteriores
+        recetaDetalleRepository.deleteByRecetaId(recetaId);
+        receta.getDetalles().clear();
+
+        // Agregar nuevos detalles
+        for (DetalleInsumoRequest detRequest : request.getDetalles()) {
+            agregarDetalle(receta, detRequest);
+        }
+
+        receta = recetaRepository.save(receta);
+        return convertirADTO(receta);
+    }
+
+    @Override
+    public void eliminar(Long recetaId) {
+        Receta receta = recetaRepository.findById(recetaId)
+                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+
+        // Soft delete
+        receta.setActivo(false);
+        recetaRepository.save(receta);
+
+        // O hard delete:
+        // recetaRepository.deleteById(recetaId);
+    }
+
+    @Override
+    public List<RecetaDTO> listarTodas() {
+        return recetaRepository.findAll().stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+    // ========== MÉTODOS AUXILIARES ==========
+
+    private void agregarDetalle(Receta receta, DetalleInsumoRequest detRequest) {
+        Insumo insumo = insumoRepository.findById(detRequest.getInsumoId())
+                .orElseThrow(() -> new RuntimeException("Insumo no encontrado: " + detRequest.getInsumoId()));
+
+        PresentacionProducto presentacion = presentacionRepository.findById(detRequest.getPresentacionId())
+                .orElseThrow(() -> new RuntimeException("Presentación no encontrada: " + detRequest.getPresentacionId()));
+
+        RecetaDetalle detalle = new RecetaDetalle();
+        detalle.setReceta(receta);
+        detalle.setInsumo(insumo);
+        detalle.setCantidad(detRequest.getCantidad());
+        detalle.setPresentacion(presentacion);
+
+        receta.getDetalles().add(detalle);
+        recetaDetalleRepository.save(detalle);
+    }
+
+    private RecetaDTO convertirADTO(Receta receta) {
+        List<RecetaDetalleDTO> detallesDTO = receta.getDetalles().stream()
+                .map(this::convertirDetalleADTO)
+                .collect(Collectors.toList());
+
+        return RecetaDTO.builder()
+                .id(receta.getId())
+                .saborId(receta.getSabor().getId())
+                .saborNombre(receta.getSabor().getNombre())
+                .activo(receta.isActivo())
+                .detalles(detallesDTO)
+                .build();
+    }
+
+    private RecetaDetalleDTO convertirDetalleADTO(RecetaDetalle detalle) {
+        return RecetaDetalleDTO.builder()
+                .id(detalle.getId())
+                .insumoId(detalle.getInsumo().getId())
+                .insumoNombre(detalle.getInsumo().getNombre())
+                .unidadMedida(detalle.getInsumo().getUnidadMedida())
+                .cantidad(detalle.getCantidad())
+                .presentacionId(detalle.getPresentacion().getId())
+                .presentacionTipo(detalle.getPresentacion().getTipo().name())
+                .build();
+    }
 
     @Override
     @Transactional
     public RecetaDTO crearOActualizar(Long saborId, List<RecetaDetalle> detallesRequest) {
 
-        SaborPizza sabor = saborRepo.findById(saborId)
+        SaborPizza sabor = saborRepository.findById(saborId)
                 .orElseThrow(() -> new RuntimeException("Sabor no encontrado"));
 
-        Receta receta = repo.findBySaborId(saborId).orElseGet(() -> {
+        Receta receta = recetaRepository.findBySaborId(saborId).orElseGet(() -> {
             Receta r = new Receta();
             r.setSabor(sabor);
             r.setDetalles(new ArrayList<>());
@@ -45,7 +166,7 @@ public class RecetaServiceImpl implements RecetaService {
 
         // Agregar nuevos detalles
         for (RecetaDetalle d : detallesRequest) {
-            Insumo insumo = insumoRepo.findById(d.getInsumo().getId())
+            Insumo insumo = insumoRepository.findById(d.getInsumo().getId())
                     .orElseThrow(() -> new RuntimeException("Insumo no encontrado"));
 
             RecetaDetalle nd = new RecetaDetalle();
@@ -56,7 +177,7 @@ public class RecetaServiceImpl implements RecetaService {
             receta.getDetalles().add(nd);
         }
 
-        Receta guardada = repo.save(receta);
+        Receta guardada = recetaRepository.save(receta);
 
         return mapToDto(guardada);
     }
@@ -91,12 +212,6 @@ public class RecetaServiceImpl implements RecetaService {
         }
 
         return dto;
-    }
-
-    @Override
-    public Receta obtenerPorSabor(Long saborId) {
-        return repo.findBySaborId(saborId)
-                .orElseThrow(() -> new RuntimeException("Este sabor no tiene receta"));
     }
 
 

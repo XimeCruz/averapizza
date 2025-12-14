@@ -26,4 +26,8 @@ public interface RecetaRepository extends JpaRepository<Receta, Long> {
 //            @Param("presentacionId") Long presentacionId
 //    );
 
+    boolean existsBySaborId(Long saborId);
+
+    @Query("SELECT r FROM Receta r LEFT JOIN FETCH r.detalles WHERE r.sabor.id = :saborId")
+    Optional<Receta> findBySaborIdWithDetalles(@Param("saborId") Long saborId);
 }

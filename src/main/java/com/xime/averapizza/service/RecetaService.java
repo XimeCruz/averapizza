@@ -17,7 +17,21 @@ public interface RecetaService {
     //Receta obtenerPorSabor(SaborPizza sabor);
 
     RecetaDTO crearOActualizar(Long saborId, List<RecetaDetalle> detalles);
-    Receta obtenerPorSabor(Long saborId);
+    RecetaDTO obtenerPorSabor(Long saborId);
     List<InsumoCalculadoDTO> calcularInsumosParaDetalle(DetallePedido detalle);
+
+    boolean tieneReceta(Long saborId);
+
+    // Crear receta
+    RecetaDTO crear(CrearRecetaRequest request);
+
+    // Actualizar receta
+    RecetaDTO actualizar(Long recetaId, CrearRecetaRequest request);
+
+    // Eliminar receta
+    void eliminar(Long recetaId);
+
+    // Listar todas las recetas
+    List<RecetaDTO> listarTodas();
 }
 

@@ -35,5 +35,9 @@ public interface RecetaDetalleRepository extends JpaRepository<RecetaDetalle, Lo
             @Param("presentacionId") Long presentacionId
     );
 
+
+    // Eliminar detalles de una receta
+    void deleteByRecetaId(Long recetaId);
+
 }
 

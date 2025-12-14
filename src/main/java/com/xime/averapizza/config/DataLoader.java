@@ -36,7 +36,7 @@ public class DataLoader {
         return args -> {
             if (productoRepository.count() > 0) {
                 System.out.println("====================================");
-                System.out.println("⚠️ DATOS YA EXISTEN - Omitiendo carga");
+                System.out.println("DATOS YA EXISTEN - Omitiendo carga");
                 System.out.println("====================================");
                 return;
             }
@@ -163,20 +163,55 @@ public class DataLoader {
             insumos.add(crearInsumo(insumoRepository, "Pimientos", "kg", 18.0, 6.0, true));
 
             // ============ 7. CREAR RECETAS ============
+            // ============ 7. CREAR RECETAS ============
             for (SaborPizza sabor : sabores) {
                 Receta receta = crearReceta(recetaRepository, sabor, true);
 
-                // Ingredientes básicos para todas las pizzas
-                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(0), 0.3); // Harina
-                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(1), 0.2); // Queso
-                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(2), 0.1); // Salsa
+                // Crear recetas para cada presentación (PESO, REDONDA, BANDEJA)
 
-                // Ingredientes específicos por sabor
+                // ========== RECETA PARA PESO (por kg) ==========
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(0), 0.4, presPeso);  // Harina
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(1), 0.25, presPeso); // Queso
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(2), 0.12, presPeso); // Salsa
+
                 if (sabor.getNombre().equals("Hawaiana")) {
-                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(4), 0.15); // Jamón
-                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(5), 0.15); // Piña
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(4), 0.18, presPeso); // Jamón
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(5), 0.18, presPeso); // Piña
                 } else if (sabor.getNombre().equals("Pepperoni")) {
-                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(3), 0.2); // Pepperoni
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(3), 0.25, presPeso); // Pepperoni
+                } else if (sabor.getNombre().equals("Vegetariana")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(6), 0.15, presPeso); // Champiñones
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(7), 0.15, presPeso); // Pimientos
+                }
+
+                // ========== RECETA PARA REDONDA ==========
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(0), 0.3, presRedonda);  // Harina
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(1), 0.2, presRedonda);  // Queso
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(2), 0.1, presRedonda);  // Salsa
+
+                if (sabor.getNombre().equals("Hawaiana")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(4), 0.15, presRedonda); // Jamón
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(5), 0.15, presRedonda); // Piña
+                } else if (sabor.getNombre().equals("Pepperoni")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(3), 0.2, presRedonda); // Pepperoni
+                } else if (sabor.getNombre().equals("Vegetariana")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(6), 0.12, presRedonda); // Champiñones
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(7), 0.12, presRedonda); // Pimientos
+                }
+
+                // ========== RECETA PARA BANDEJA ==========
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(0), 0.6, presBandeja);  // Harina
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(1), 0.4, presBandeja);  // Queso
+                crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(2), 0.2, presBandeja);  // Salsa
+
+                if (sabor.getNombre().equals("Hawaiana")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(4), 0.3, presBandeja); // Jamón
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(5), 0.3, presBandeja); // Piña
+                } else if (sabor.getNombre().equals("Pepperoni")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(3), 0.4, presBandeja); // Pepperoni
+                } else if (sabor.getNombre().equals("Vegetariana")) {
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(6), 0.24, presBandeja); // Champiñones
+                    crearRecetaDetalle(recetaDetalleRepository, receta, insumos.get(7), 0.24, presBandeja); // Pimientos
                 }
             }
 
@@ -385,12 +420,13 @@ public class DataLoader {
         return repository.save(receta);
     }
 
-    private void crearRecetaDetalle(RecetaDetalleRepository repository, Receta receta,
-                                    Insumo insumo, double cantidad) {
+    private void crearRecetaDetalle(RecetaDetalleRepository repository, Receta receta, Insumo insumo, Double cantidad, PresentacionProducto presentacion) {
         RecetaDetalle detalle = new RecetaDetalle();
         detalle.setReceta(receta);
         detalle.setInsumo(insumo);
         detalle.setCantidad(cantidad);
+        detalle.setPresentacion(presentacion);
+
         repository.save(detalle);
     }
 }

@@ -124,8 +124,10 @@ public class PedidoServiceImpl implements PedidoService {
                         pzReq.getPesoKg()
                 );
 
+                System.out.println(precioUnit);
                 Double subtotal = precioUnit * pzReq.getCantidad();
                 total += subtotal;
+                System.out.println(total);
 
                 // Descontar inventario por sabor
                 inventarioService.descontarPorSabor(sabor1, pzReq.getCantidad());

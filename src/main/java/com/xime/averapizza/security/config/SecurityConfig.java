@@ -43,7 +43,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/cajero/**").hasAnyRole("CAJERO", "ADMIN")
 //                        .requestMatchers("/cliente/**").hasAnyRole("CLIENTE", "CAJERO", "ADMIN")
 //                        .anyRequest().authenticated()
-                                .requestMatchers("*").permitAll()
+                                .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

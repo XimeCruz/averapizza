@@ -334,6 +334,30 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Transactional(readOnly = true)
+    public List<HistorialPedidoDTO> obtenerPedidosDelDia(Long clienteId) {
+        LocalDateTime inicioDia = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime finDia = LocalDateTime.now().toLocalDate().atTime(23, 59, 59);
+
+        List<Pedido> pedidos = pedidoRepository.findByUsuarioIdAndFechaHoraBetweenOrderByFechaHoraDesc(
+                clienteId.intValue(),
+                inicioDia,
+                finDia
+        );
+
+        return pedidos.stream()
+                .map(pedido -> HistorialPedidoDTO.builder()
+                        .pedidoId(pedido.getId())
+                        .fecha(pedido.getFechaHora())
+                        .total(pedido.getTotal())
+                        .estado(pedido.getEstado().name())
+                        .tipoServicio(pedido.getTipoServicio().name())
+                        .numeroProductos(pedido.getDetalles() != null ? pedido.getDetalles().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
     public EstadisticasClienteDTO obtenerEstadisticasCliente(Long clienteId) {
         Long totalPedidos = contarPedidosPorCliente(clienteId);
         Double totalGastado = calcularTotalGastado(clienteId);

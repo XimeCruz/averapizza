@@ -1,9 +1,6 @@
 package com.xime.averapizza.controller;
 
-import com.xime.averapizza.dto.CambiarEstadoDTO;
-import com.xime.averapizza.dto.CrearPedidoRequest;
-import com.xime.averapizza.dto.InsumoCalculadoDTO;
-import com.xime.averapizza.dto.PedidoResponseDTO;
+import com.xime.averapizza.dto.*;
 import com.xime.averapizza.model.DetallePedido;
 import com.xime.averapizza.model.Pedido;
 import com.xime.averapizza.service.PedidoService;
@@ -116,5 +113,17 @@ public class PedidoController {
 
         return ResponseEntity.ok(agrupados.values());
     }
+
+    @GetMapping("/clientes/{clienteId}/historial-pedidos")
+    public ResponseEntity<List<PedidoResponseDTO>> obtenerHistorialPedidos(@PathVariable Long clienteId) {
+        return ResponseEntity.ok(pedidoService.obtenerHistorialPedidos(clienteId));
+    }
+
+    @GetMapping("/historial/{clienteId}/hoy")
+    public ResponseEntity<List<PedidoResponseDTO>> obtenerPedidosHoy(@PathVariable Long clienteId) {
+        List<PedidoResponseDTO> pedidos = pedidoService.obtenerPedidosDelDia(clienteId);
+        return ResponseEntity.ok(pedidos);
+    }
+
 }
 

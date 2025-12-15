@@ -160,11 +160,6 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.obtenerPizzaFavorita(clienteId));
     }
 
-    @GetMapping("/clientes/{clienteId}/historial-pedidos")
-    public ResponseEntity<List<HistorialPedidoDTO>> obtenerHistorialPedidos(@PathVariable Long clienteId) {
-        return ResponseEntity.ok(dashboardService.obtenerHistorialPedidos(clienteId));
-    }
-
     @GetMapping("/clientes/{clienteId}/estadisticas")
     public ResponseEntity<EstadisticasClienteDTO> obtenerEstadisticasCliente(@PathVariable Long clienteId) {
         return ResponseEntity.ok(dashboardService.obtenerEstadisticasCliente(clienteId));

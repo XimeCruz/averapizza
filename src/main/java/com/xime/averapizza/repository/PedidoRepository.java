@@ -30,4 +30,10 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             @Param("inicio") LocalDateTime inicio,
             @Param("fin") LocalDateTime fin
     );
+
+    List<Pedido> findByUsuarioIdAndFechaHoraBetweenOrderByFechaHoraDesc(
+            Integer usuarioId,
+            LocalDateTime inicio,
+            LocalDateTime fin
+    );
 }

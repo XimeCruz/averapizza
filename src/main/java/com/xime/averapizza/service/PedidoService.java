@@ -1,6 +1,7 @@
 package com.xime.averapizza.service;
 
 import com.xime.averapizza.dto.CrearPedidoRequest;
+import com.xime.averapizza.dto.HistorialPedidoDTO;
 import com.xime.averapizza.dto.PedidoResponseDTO;
 import com.xime.averapizza.model.EstadoPedido;
 import com.xime.averapizza.model.Pedido;
@@ -39,5 +40,8 @@ public interface PedidoService {
 
     Pedido obtenerPorId(Long pedidoId);
 
+    List<PedidoResponseDTO> obtenerHistorialPedidos(Long clienteId);
+
+    List<PedidoResponseDTO> obtenerPedidosDelDia(Long clienteId);
 }
 

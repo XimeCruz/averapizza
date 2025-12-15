@@ -405,5 +405,31 @@ public class PedidoServiceImpl implements PedidoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<PedidoResponseDTO> obtenerHistorialPedidos(Long clienteId) {
+        List<Pedido> pedidos = pedidoRepository.findByUsuarioIdOrderByFechaHoraDesc(clienteId.intValue());
+
+        return pedidos.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PedidoResponseDTO> obtenerPedidosDelDia(Long clienteId) {
+        LocalDateTime inicioDia = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime finDia = LocalDateTime.now().toLocalDate().atTime(23, 59, 59);
+
+        List<Pedido> pedidos = pedidoRepository.findByUsuarioIdAndFechaHoraBetweenOrderByFechaHoraDesc(
+                clienteId.intValue(),
+                inicioDia,
+                finDia
+        );
+
+        return pedidos.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+
 
 }

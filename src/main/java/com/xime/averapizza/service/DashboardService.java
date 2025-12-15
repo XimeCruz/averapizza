@@ -73,4 +73,5 @@ public interface DashboardService {
 
     void cambiarPassword(Long clienteId, CambiarPasswordDTO datos);
 
+    List<HistorialPedidoDTO> obtenerPedidosDelDia(Long clienteId);
 }
